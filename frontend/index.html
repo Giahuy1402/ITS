@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrafficVision AI - Hệ Thống Phân Tích Giao Thông Thông Minh</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bundled Chart.js 4.4.1 (MIT) -->
+    <script src="js/vendor/chart.umd.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>TrafficVision</h2>
+                    <span class="brand-badge">AI SYSTEM</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="overview">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    <span>Tổng quan</span>
+                </button>
+
+                <button class="nav-item" data-tab="analysis">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"/>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                    </svg>
+                    <span>Phân tích video</span>
+                </button>
+
+                <button class="nav-item" data-tab="calibration">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                    <span>Hiệu chỉnh camera</span>
+                </button>
+
+                <button class="nav-item" data-tab="history">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span>Lịch sử phân tích</span>
+                </button>
+
+                <button class="nav-item" data-tab="settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    <span>Cài đặt</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="server-status" id="server-status-badge">
+                    <span class="status-dot offline"></span>
+                    <span class="status-text">Đang kết nối backend...</span>
+                </div>
+                <p class="copyright">Môn Đồ án ITS - ĐH</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- TAB 1: OVERVIEW -->
+            <section id="tab-overview" class="tab-content active">
+                <header class="page-header">
+                    <div>
+                        <h1>Tổng quan Hệ thống TrafficVision AI</h1>
+                        <p class="subtitle">Phân tích giao thông thông minh dựa trên mô hình YOLO & ByteTrack</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="switchTab('analysis')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        <span>Tạo phiên phân tích mới</span>
+                    </button>
+                </header>
+
+                <!-- Metric Summary Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+                        </div>
+                        <div class="kpi-info">
+                            <span class="kpi-title">Tổng số phiên phân tích</span>
+                            <h3 id="kpi-total-sessions">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        </div>
+                        <div class="kpi-info">
+                            <span class="kpi-title">Tổng phương tiện đã nhận diện</span>
+                            <h3 id="kpi-total-vehicles">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon amber">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                        </div>
+                        <div class="kpi-info">
+                            <span class="kpi-title">Tốc độ trung bình tổng hợp</span>
+                            <h3 id="kpi-avg-speed">-- km/h</h3>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon purple">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div class="kpi-info">
+                            <span class="kpi-title">Mô hình AI hoạt động</span>
+                            <h3>YOLOv8 + ByteTrack</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Quick Start & Guidance -->
+                <div class="grid-2">
+                    <div class="card glass">
+                        <h3>Tính năng cốt lõi</h3>
+                        <ul class="feature-list">
+                            <li>
+                                <div class="badge-dot green"></div>
+                                <div>
+                                    <strong>Nhận diện & Theo dõi đa phương tiện:</strong> Ô tô, Xe máy, Xe buýt, Xe tải bằng mô hình YOLOv8 và thuật toán ByteTrack.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="badge-dot blue"></div>
+                                <div>
+                                    <strong>Đo tốc độ chuẩn 2 mốc địa hình:</strong> Hiệu chỉnh khoảng cách mét giữa 2 vạch đo A & B. Tính tốc độ theo khung hình video (không dùng thời gian xử lý máy tính).
+                                </div>
+                            </li>
+                            <li>
+                                <div class="badge-dot amber"></div>
+                                <div>
+                                    <strong>Nhận biết kẹt xe theo đa chỉ số:</strong> Đánh giá mật độ ROI, tốc độ trung bình, tỷ lệ xe chạy chậm và bộ lọc duy trì Hysteresis.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card glass">
+                        <h3>Nguồn Video thử nghiệm</h3>
+                        <p class="text-muted">Chọn video có sẵn trong hệ thống hoặc tải lên video giao thông MP4 để bắt đầu phân tích.</p>
+                        <div style="margin-top: 20px;">
+                            <button class="btn btn-secondary w-100" onclick="loadSampleVideoAndStart()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <span>Tải Video Mẫu Thử Nghiệm (sample_traffic.mp4)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: VIDEO ANALYSIS -->
+            <section id="tab-analysis" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h1>Phân tích Video Giao thông</h1>
+                        <p class="subtitle">Chỉ cần tải video lên. Hệ thống tự vẽ vùng quan sát, đặt vạch đếm và bắt đầu phân tích.</p>
+                    </div>
+                </header>
+
+                <!-- STEP 1: Video Selection / Upload -->
+                <div class="card glass section-card">
+                    <div class="card-header">
+                        <div class="step-badge">Bước 1</div>
+                        <h3>Chọn hoặc Upload Video Giao thông</h3>
+                    </div>
+
+                    <div class="upload-grid">
+                        <div class="upload-dropzone" id="dropzone">
+                            <input type="file" id="video-file-input" accept=".mp4,.avi,.mov,.mkv" style="display:none;">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                            </svg>
+                            <p class="dropzone-title">Kéo thả file video MP4 vào đây hoặc bấm để chọn</p>
+                            <p class="dropzone-hint">Hỗ trợ MP4, AVI, MOV, MKV (Tối đa 500 MB)</p>
+                        </div>
+
+                        <div class="video-meta-box" id="video-meta-box">
+                            <h4>Thông tin Video đã chọn</h4>
+                            <p id="demo-notice" class="text-muted" style="display:none">Đang dùng video mô phỏng và bộ nhận diện demo.</p>
+                            <div class="meta-row"><span>Tên file:</span> <strong id="meta-filename">Chưa chọn video</strong></div>
+                            <div class="meta-row"><span>Độ phân giải:</span> <strong id="meta-resolution">-- x --</strong></div>
+                            <div class="meta-row"><span>FPS:</span> <strong id="meta-fps">--</strong></div>
+                            <div class="meta-row"><span>Thời lượng:</span> <strong id="meta-duration">-- giây</strong></div>
+                            <div class="meta-row"><span>Tổng số khung hình:</span> <strong id="meta-frames">--</strong></div>
+
+                            <button class="btn btn-secondary mt-3" id="btn-use-sample" onclick="loadSampleVideoAndStart()">
+                                Sử dụng Video Mẫu có sẵn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <p id="auto-setup-status" class="text-muted mb-15" role="status" aria-live="polite">Chọn video để tự động thiết lập và phân tích. Không cần vẽ vạch thủ công.</p>
+                <details id="advanced-setup" class="mb-20">
+                    <summary class="btn btn-secondary">Nâng cao: xem / chỉnh vùng quan sát và các vạch</summary>
+                <!-- STEP 2: Interactive Camera Setup Canvas -->
+                <div class="card glass section-card" id="setup-card">
+                    <div class="card-header flex-between">
+                        <div class="flex-align">
+                            <div class="step-badge">Bước 2</div>
+                            <h3>Vùng quan sát và các vạch tự động</h3>
+                        </div>
+                        <div class="canvas-tools">
+                            <button class="tool-btn active" id="tool-roi" onclick="setDrawingTool('roi')">
+                                <span class="color-dot yellow"></span> Vẽ ROI
+                            </button>
+                            <button class="tool-btn" id="tool-line-a" onclick="setDrawingTool('line_a')">
+                                <span class="color-dot magenta"></span> Vạch A (Mốc 1)
+                            </button>
+                            <button class="tool-btn" id="tool-line-b" onclick="setDrawingTool('line_b')">
+                                <span class="color-dot orange"></span> Vạch B (Mốc 2)
+                            </button>
+                            <button class="tool-btn" id="tool-count" onclick="setDrawingTool('count')">
+                                <span class="color-dot cyan"></span> Vạch Đếm Xe
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="clearCanvasDrawing()">
+                                Xóa tất cả vạch
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container">
+                        <canvas id="setup-canvas"></canvas>
+                        <div class="canvas-overlay-msg" id="canvas-msg">Vui lòng tải hoặc chọn video để hiển thị khung hình hiệu chỉnh</div>
+                    </div>
+
+                    <p class="text-muted mb-15">Vẽ vạch A/B hoặc vạch đếm: kéo từ đầu đến cuối, hoặc bấm hai điểm khác nhau. ROI: bấm lần lượt các đỉnh.</p>
+                    <div class="calibration-settings-row">
+                        <div class="form-group">
+                            <label><input type="checkbox" id="chk-enable-speed" checked> Bật đo tốc độ (km/h)</label>
+                        </div>
+                        <div class="form-group flex-align">
+                            <label>Chế độ đo:</label>
+                            <select id="speed-mode" class="form-control inline-input" style="width: auto; min-width: 220px;">
+                                <option value="auto" selected>Tự động ước lượng (theo kích thước xe)</option>
+                                <option value="two_line">2 vạch A & B (Hiệu chỉnh mét chính xác)</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-align" id="distance-input-group">
+                            <label>Khoảng cách thực giữa Vạch A và Vạch B:</label>
+                            <input type="number" id="input-distance-m" class="form-control inline-input" placeholder="Nhập mét (khi chọn 2 vạch)" step="0.5" min="0.1">
+                            <span class="unit">mét</span>
+                        </div>
+                        <div class="form-group">
+                            <label><input type="checkbox" id="chk-enable-count" checked> Bật đếm xe qua vạch ảo</label>
+                        </div>
+                    </div>
+                </div>
+
+                </details>
+                <!-- STEP 3: Execution Control Panel -->
+                <div class="card glass section-card flex-between flex-wrap" id="control-card">
+                    <div class="flex-align flex-wrap gap-15">
+                        <button class="btn btn-primary btn-lg" id="btn-start-session" onclick="startAnalysisSession()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            <span>Phân tích với cấu hình hiện tại</span>
+                        </button>
+                        <button class="btn btn-danger btn-lg" id="btn-cancel-session" onclick="cancelAnalysisSession()" disabled>
+                            Hủy phân tích
+                        </button>
+                        <button class="btn btn-secondary" id="btn-rerun-session" onclick="rerunAnalysisSession()" disabled>
+                            Chạy lại phiên này
+                        </button>
+                    </div>
+
+                    <div class="flex-align gap-10">
+                        <button class="btn btn-outline-primary" onclick="openSavePresetModal()">
+                            Lưu cấu hình camera này
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Live / Finished Analysis Dashboard -->
+                <div id="results-dashboard" style="display:none;">
+                    <!-- Progress Bar & Status Header -->
+                    <div class="card glass mb-20">
+                        <div class="flex-between mb-10">
+                            <div>
+                                <h4 id="session-status-title">Trạng thái: Đang xử lý video...</h4>
+                                <span class="text-muted" id="session-speed-eta">Tốc độ xử lý: 0 FPS | ETA: 0s</span>
+                            </div>
+                            <div class="progress-pct-badge" id="progress-pct-text">0%</div>
+                        </div>
+
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Main Results Row: Video Output + Stat Cards -->
+                    <div class="grid-video-stats">
+                        <!-- Video Display Player -->
+                        <div class="card glass">
+                            <h3>Video giao thông</h3>
+                            <p id="playback-info" class="text-muted mb-10">Video kết quả từ 60 FPS; giữ FPS nguồn cao hơn (tối đa 240). Nguồn dưới 60 FPS sẽ được lặp khung hình.</p>
+                            <div class="video-player-box">
+                                <div class="video-stage">
+                                    <video id="output-video-player" controls playsinline muted style="display:none;"></video>
+                                    <canvas id="live-overlay-canvas" aria-hidden="true"></canvas>
+                                </div>
+                                <div class="video-placeholder" id="video-placeholder">
+                                    <span>Đang chuẩn bị khung hình video...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Cards -->
+                        <div class="stats-panel">
+                            <!-- Traffic Status Badge Card -->
+                            <div class="card glass status-card" id="traffic-status-card">
+                                <span class="status-card-label">TRẠNG THÁI GIAO THÔNG ROI</span>
+                                <h2 class="traffic-status-badge text-insufficient" id="traffic-status-text">Chưa đủ dữ liệu</h2>
+                                <p class="reason-text" id="traffic-status-reason">Đang đợi kết quả phân tích khung hình...</p>
+                            </div>
+
+                            <!-- Average Speed Card -->
+                            <div class="card glass">
+                                <span class="status-card-label">TỐC ĐỘ TRUNG BÌNH PHIÊN</span>
+                                <h2 class="speed-val" id="avg-speed-text">-- <small>km/h</small></h2>
+                                <p class="text-muted" id="avg-speed-sub">Dựa trên tất cả xe có phép đo hợp lệ qua 2 vạch</p>
+                            </div>
+
+                            <!-- Vehicle Count Breakdown Grid -->
+                            <div class="card glass">
+                                <span class="status-card-label">TỔNG XE ĐÃ ĐẾM THEO LOẠI</span>
+                                <div class="vehicle-count-grid">
+                                    <div class="v-count-item">
+                                        <span class="v-type">Ô tô</span>
+                                        <h3 id="count-car">0</h3>
+                                    </div>
+                                    <div class="v-count-item">
+                                        <span class="v-type">Xe máy</span>
+                                        <h3 id="count-moto">0</h3>
+                                    </div>
+                                    <div class="v-count-item">
+                                        <span class="v-type">Xe buýt</span>
+                                        <h3 id="count-bus">0</h3>
+                                    </div>
+                                    <div class="v-count-item">
+                                        <span class="v-type">Xe tải</span>
+                                        <h3 id="count-truck">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid-2 mt-20">
+                        <div class="card glass">
+                            <h3>Biểu đồ Lưu lượng & Tốc độ theo thời gian</h3>
+                            <div class="chart-box">
+                                <canvas id="chart-flow-speed"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card glass">
+                            <h3>Biểu đồ Diễn biến Trạng thái Ùn tắc</h3>
+                            <div class="chart-box">
+                                <canvas id="chart-congestion"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Log Table & Exports -->
+                    <div class="card glass mt-20">
+                        <div class="flex-between mb-15">
+                            <h3>Bảng Danh sách Phương tiện Theo dõi</h3>
+                            <div class="flex-align gap-10">
+                                <a id="btn-download-csv" class="btn btn-sm btn-secondary" href="#" download target="_blank">
+                                    Tải Báo cáo CSV
+                                </a>
+                                <a id="btn-download-video" class="btn btn-sm btn-primary" href="#" download target="_blank">
+                                    Tải Video Kết quả
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Track ID</th>
+                                        <th>Loại xe</th>
+                                        <th>Thời điểm qua (s)</th>
+                                        <th>Hướng di chuyển</th>
+                                        <th>Tốc độ (km/h)</th>
+                                        <th>Trạng thái phép đo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vehicle-table-body">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">Chưa có dữ liệu phương tiện</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CAMERA CALIBRATION PRESETS -->
+            <section id="tab-calibration" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h1>Quản lý Hiệu chỉnh Camera</h1>
+                        <p class="subtitle">Lưu và tải lại cấu hình vùng ROI và 2 vạch đo cho các góc camera cố định</p>
+                    </div>
+                </header>
+
+                <div class="grid-2">
+                    <div class="card glass">
+                        <h3>Danh sách Cấu hình Cố định đã lưu</h3>
+                        <div id="preset-list" class="preset-list-container">
+                            <p class="text-muted">Đang tải danh sách cấu hình...</p>
+                        </div>
+                    </div>
+
+                    <div class="card glass">
+                        <h3>Giải thích Nguyên lý & Hạn chế Hiệu chỉnh</h3>
+                        <div class="info-content-box">
+                            <h4>Phương pháp 2 mốc địa hình:</h4>
+                            <p>Tốc độ phương tiện được tính dựa trên thời gian di chuyển $\Delta t$ giữa 2 vạch A và B có khoảng cách thực tế $D$ (mét) đã biết:</p>
+                            <div class="formula-box">
+                                $$\text{Tốc độ (km/h)} = 3.6 \times \frac{D \text{ (mét)}}{\Delta t \text{ (giây)}}$$
+                            </div>
+
+                            <h4 class="mt-15">Các hạn chế cần lưu ý:</h4>
+                            <ul>
+                                <li><strong>Điểm đại diện:</strong> Sử dụng điểm giữa cạnh dưới Bounding Box (vị trí xe tiếp xúc mặt đường). Nếu xe bị che khuất một phần, điểm này có thể bị nảy mốc.</li>
+                                <li><strong>Camera rung / thay đổi góc:</strong> Khi vị trí camera bị xê dịch, cấu hình vạch A/B phải được vẽ lại để giữ chính xác khoảng cách.</li>
+                                <li><strong>Góc phối cảnh hẹp:</strong> Xe chạy hướng thẳng vào camera làm sai số biến thiên khoảng cách pixel cao hơn so với xe chạy ngang góc nhìn.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: ANALYSIS HISTORY -->
+            <section id="tab-history" class="tab-content">
+                <header class="page-header flex-between">
+                    <div>
+                        <h1>Lịch sử Phân tích Video</h1>
+                        <p class="subtitle">Xem lại danh sách các phiên phân tích đã thực hiện và tải kết quả</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="loadAnalysisHistory()">Làm mới lịch sử</button>
+                </header>
+
+                <div class="card glass">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Phiên</th>
+                                    <th>Thời điểm</th>
+                                    <th>Trạng thái</th>
+                                    <th>Tổng xe đếm</th>
+                                    <th>Tốc độ TB</th>
+                                    <th>Trạng thái Kẹt xe</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">Đang tải lịch sử phân tích...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: SETTINGS -->
+            <section id="tab-settings" class="tab-content">
+                <header class="page-header">
+                    <div>
+                        <h1>Cài đặt Hệ thống & Ngưỡng AI</h1>
+                        <p class="subtitle">Tùy chỉnh tham số nhận diện YOLO và bộ đánh giá tình trạng ùn tắc</p>
+                    </div>
+                </header>
+
+                <div class="grid-2">
+                    <div class="card glass">
+                        <h3>Cấu hình YOLO & Nhận diện</h3>
+                        <p class="text-muted mb-15">Xe máy được bật mặc định, dùng ngưỡng riêng 0.20 để giảm bỏ sót xe nhỏ. Video xuất từ 60 FPS và giữ FPS nguồn cao hơn; tốc độ xử lý AI hiển thị riêng.</p>
+                        <div class="form-group mb-20">
+                            <label for="detection-mode">Chế độ nhận diện</label>
+                            <select id="detection-mode" class="form-control">
+                                <option value="yolo">YOLO — video giao thông thực tế</option>
+                                <option value="demo">Demo — hình khối trong video mẫu</option>
+                            </select>
+                            <p class="text-muted">Video mẫu chỉ mô phỏng chuyển động và phép đo; không dùng để đánh giá độ chính xác AI.</p>
+                        </div>
+                        
+                        <div class="form-group mb-20">
+                            <label>Ngưỡng độ tin cậy YOLO (Confidence Threshold): <strong id="val-conf">0.35</strong></label>
+                            <input type="range" id="setting-conf" min="0.10" max="0.90" step="0.05" value="0.35" oninput="document.getElementById('val-conf').innerText=this.value">
+                        </div>
+
+                        <div class="form-group mb-20">
+                            <label>Các loại phương tiện cần nhận diện:</label>
+                            <div class="checkbox-group mt-10">
+                                <label><input type="checkbox" class="setting-cls" value="2" checked> Ô tô</label>
+                                <label><input type="checkbox" class="setting-cls" value="3" checked> Xe máy</label>
+                                <label><input type="checkbox" class="setting-cls" value="5" checked> Xe buýt</label>
+                                <label><input type="checkbox" class="setting-cls" value="7" checked> Xe tải</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass">
+                        <h3>Cấu hình Ngưỡng Ùn tắc Giao thông</h3>
+                        
+                        <div class="form-group mb-15">
+                            <label>Ngưỡng số xe đông trong ROI (xe):</label>
+                            <input type="number" id="setting-occupancy" class="form-control" value="8" min="1">
+                        </div>
+
+                        <div class="form-group mb-15">
+                            <label>Ngưỡng tốc độ chậm (km/h):</label>
+                            <input type="number" id="setting-slow-speed" class="form-control" value="20.0" min="1" step="1.0">
+                        </div>
+
+                        <div class="form-group mb-15">
+                            <label>Ngưỡng tỷ lệ xe chậm (%):</label>
+                            <input type="number" id="setting-slow-ratio" class="form-control" value="50" min="10" max="100">
+                        </div>
+
+                        <div class="form-group mb-15">
+                            <label>Thời gian duy trì tối thiểu (giây):</label>
+                            <input type="number" id="setting-duration" class="form-control" value="3.0" min="0" step="0.5">
+                        </div>
+
+                        <button class="btn btn-primary mt-15" onclick="saveSystemSettings()">
+                            Lưu cấu hình Cài đặt
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL: SAVE PRESET -->
+    <div class="modal-backdrop" id="modal-save-preset" style="display:none;">
+        <div class="modal-card glass">
+            <h3>Lưu Cấu hình Camera mới</h3>
+            <p class="text-muted">Lưu lại vị trí ROI, vạch A & B hiện tại để tái sử dụng nhanh cho các video cùng góc camera.</p>
+            
+            <div class="form-group mt-15">
+                <label>Tên cấu hình:</label>
+                <input type="text" id="preset-name-input" class="form-control" placeholder="Ví dụ: Camera Ngã tư Hàng Xanh">
+            </div>
+            
+            <div class="form-group mt-15">
+                <label>Mô tả ghi chú:</label>
+                <input type="text" id="preset-desc-input" class="form-control" placeholder="Góc quay từ tầng 3, 10m từ vạch A đến B">
+            </div>
+
+            <div class="flex-end gap-10 mt-20">
+                <button class="btn btn-secondary" onclick="closeSavePresetModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="confirmSavePreset()">Lưu cấu hình</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript files -->
+    <script src="js/api.js?v=3"></script>
+    <script src="js/canvas_editor.js?v=2"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js?v=5"></script>
+</body>
+</html>
